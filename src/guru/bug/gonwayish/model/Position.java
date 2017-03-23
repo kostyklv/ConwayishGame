@@ -3,20 +3,22 @@ package guru.bug.gonwayish.model;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * @author Dimitrijs Fedotovs <a href="http://www.bug.guru">www.bug.guru</a>
  * @version 1.0
  * @since 1.0
  */
-public final class Position {
+public final class Position implements Comparable<Position> {
     public static final int WIDTH = 10;
     public static final int HEIGHT = 10;
     private int column;
     private int row;
 
+
     public static Set<Position> all() {
-        Set<Position> result = new HashSet<>();
+        Set<Position> result = new TreeSet<>();
         for (int r = 0; r < HEIGHT; r++) {
             for (int c = 0; c < WIDTH; c++) {
                 result.add(new Position(c, r));
@@ -42,7 +44,7 @@ public final class Position {
     }
 
     public Set<Position> around() {
-        Set<Position> result = new HashSet<>();
+        Set<Position> result = new TreeSet<>();
         for (int r = row - 1; r <= row + 1; r++) {
             for (int c = column - 1; c <= column + 1; c++) {
                 if (isValid(c, r) && (c != column || r != row)) {
@@ -56,6 +58,7 @@ public final class Position {
     private boolean isValid(int c, int r) {
         return r >= 0 && r < HEIGHT && c >= 0 && c < WIDTH;
     }
+
 
     @Override
     public boolean equals(Object o) {
@@ -77,5 +80,13 @@ public final class Position {
                 "column=" + column +
                 ", row=" + row +
                 '}';
+    }
+    @Override
+    public int compareTo(Position o) {
+        int result = this.row - o.row;
+        if (result == 0) {
+            result = this.column - o.column;
+        }
+        return result;
     }
 }
