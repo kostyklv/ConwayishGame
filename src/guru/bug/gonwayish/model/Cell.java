@@ -1,5 +1,6 @@
 package guru.bug.gonwayish.model;
 
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -43,7 +44,6 @@ public class Cell implements Runnable {
     public void run() {
         waitUntilFieldReady();
         while (field.isRunning()) {
-            waitUntilFieldReady();
             pause();
             lock();
 
@@ -52,7 +52,11 @@ public class Cell implements Runnable {
                 long bt = getBirthtime();
                 long cur = System.currentTimeMillis();
 
-                Set<Cell> around = field.findAround(position);
+//                Set<Cell> around = field.findAround(position);
+                List<Cell> around = field.findAroundAndTryLock(position);
+                if (around == null) {
+                    continue;
+                }
                 try {
 
 //            long liveCount=0;
@@ -141,7 +145,7 @@ public class Cell implements Runnable {
 
     private void pause() {
         try {
-            Thread.sleep(10);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             // ignore
         }
@@ -173,5 +177,9 @@ public class Cell implements Runnable {
 
     public long getBirthtime() {
         return birthtime;
+    }
+
+    public boolean tryLock() {
+        return lock.tryLock();
     }
 }
